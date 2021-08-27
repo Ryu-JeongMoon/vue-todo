@@ -1,35 +1,49 @@
 <template>
   <div class="inputBox shadow">
     <input type="text" v-model="newTodoItem" v-on:keyup.enter="addTodo">
-    <!--    <button v-on:click="addTodo">add</button>-->
     <span class="addContainer" v-on:click="addTodo">
       <i class="fas fa-plus addBtn"></i>
     </span>
+
+    <modal v-if="showModal" @close="showModal = false">
+      <!--
+    you can use custom content here to overwrite
+    default content -->
+      <h3 slot="header">
+        경고!
+        <i class="fas fa-times closeModalBtn" @click="showModal = false"></i>
+      </h3>
+      <h3 slot="body">빈 칸을 입력할 수 없습니다</h3>
+
+    </modal>
   </div>
 </template>
 
 <script>
+import Modal from "@/components/common/Modal";
+
 export default {
   data: function () {
     return {
-      newTodoItem: ''
+      newTodoItem: '',
+      showModal: false
     }
   },
   methods: {
     addTodo() {
       if (this.newTodoItem !== '') {
-        var obj = {completed: false, item: this.newTodoItem};
-
-        // obj 그냥 넣으면 application 저장소에서 확인할 수가 없음
-        // stringify api 를 이용해 string 형태로 넣어야 확인 가능
-        // localStorage.setItem(this.newTodoItem, obj);
-        localStorage.setItem(this.newTodoItem, JSON.stringify(obj));
+        this.$emit('addTodoItem', this.newTodoItem);
         this.clearInput();
+      } else {
+        this.showModal = !this.showModal;
       }
     },
     clearInput() {
       this.newTodoItem = '';
     }
+  },
+  components: {
+    modal: Modal
   }
 }
 </script>
@@ -63,5 +77,8 @@ input:focus {
 .addBtn {
   color: white;
   vertical-align: middle;
+}
+.closeModalBtn {
+  color: #42b983;
 }
 </style>
