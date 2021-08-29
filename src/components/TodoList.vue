@@ -1,11 +1,11 @@
 <template>
   <div>
     <transition-group name="list" tag="ul">
-      <li v-for="(todoItem, index) in propsdata" v-bind:key="todoItem.item" class="shadow">
+      <li v-for="(todoItem, index) in this.todoItems" v-bind:key="todoItem.item" class="shadow">
         <i class="checkBtn fas fa-check-circle" v-bind:class="{checkBtnCompleted: todoItem.completed}"
-           v-on:click="toggleComplete(todoItem, index)"></i>
+           @click="toggleComplete({todoItem, index})"></i>
         <span v-bind:class="{textCompleted: todoItem.completed}">{{ todoItem.item }}</span>
-        <span class="removeBtn" v-on:click="removeTodo(todoItem, index)">
+        <span class="removeBtn" @click="removeTodo({todoItem, index})">
           <i class="fas fa-trash-alt"></i>
         </span>
       </li>
@@ -14,20 +14,27 @@
 </template>
 
 <script>
+import {mapGetters, mapState, mapMutations} from 'vuex';
+
 export default {
-  props: ['propsdata'],
-
   methods: {
+    ...mapMutations({
+      removeTodo: 'removeTodoItem',
+      toggleComplete: 'toggleOneItem'
+    }),
     /** template 에서의 parameter 순서와 다르면 제대로 동작 X */
-    removeTodo: function (todoItem, index) {
-      this.$emit('removeItem', todoItem, index);
-    },
+    // removeTodo: function (todoItem, index) {
+    //   this.$store.commit('removeTodoItem', {todoItem, index});
+    // },
     // eslint-disable-next-line no-unused-vars
-    toggleComplete: function (todoItem, index) {
-      this.$emit('toggleItem', todoItem, index)
-    }
+    // toggleComplete: function (todoItem, index) {
+    //   this.$store.commit('toggleOneItem', {todoItem, index});
+    // }
   },
-
+  computed: {
+    ...mapGetters(['storedTodoItems']),
+    ...mapState(['todoItems'])
+  }
 }
 </script>
 
